@@ -17,8 +17,7 @@ public class VisionManager {
 
   private static Variables vars = Variables.getInstance();
 
-
-  public void startVisionThreads(){
+  public void startVisionThreads() {
     // read configuration
     if (!Config.readConfig()) {
       return;
@@ -36,14 +35,15 @@ public class VisionManager {
     // start image processing on camera 0 if present
     if (vars.cameras.size() >= 1) {
       VisionThread visionThread = new VisionThread(vars.cameras.get(0),
-              new MyPipeline(), pipeline -> {
-        // do something with pipeline results
-      });
-      /* something like this for GRIP:
-      VisionThread visionThread = new VisionThread(cameras.get(0),
-              new GripPipeline(), pipeline -> {
-        ...
-      });
+          new MyPipeline(), pipeline -> {
+            // do something with pipeline results
+          });
+      /*
+       * something like this for GRIP:
+       * VisionThread visionThread = new VisionThread(cameras.get(0),
+       * new GripPipeline(), pipeline -> {
+       * ...
+       * });
        */
 
       visionThread.start();
@@ -54,11 +54,11 @@ public class VisionManager {
    * Example pipeline.
    */
   public static class MyPipeline implements VisionPipeline {
-    public int val;
+    public final VisionProcessor processor = new VisionProcessor();
 
     @Override
     public void process(Mat mat) {
-      val += 1;
+      processor.analyze(mat);
     }
   }
 }

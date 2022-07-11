@@ -28,20 +28,16 @@ public class VisionProcessor {
   private final int WIDTH = 100;
   private final int HEIGHT = 100;
 
-  private final CvSink inputStream;
   private final CvSource outputStream;
   private final NetworkTableEntry targetXEntry;
   private final NetworkTableEntry targetYEntry;
 
-  private Mat inputImg = new Mat();
   private Mat outputImg = new Mat();
 
   private List<Double> xList = new ArrayList<>();
   private List<Double> yList = new ArrayList<>();
 
   public VisionProcessor() {
-    CameraServer.startAutomaticCapture();
-    inputStream = CameraServer.getVideo();
     outputStream = CameraServer.putVideo("Processed", WIDTH, HEIGHT);
 
     NetworkTableInstance ntInstance = NetworkTableInstance.getDefault();
@@ -50,16 +46,8 @@ public class VisionProcessor {
     targetYEntry = nt.getEntry("y");
   }
 
-  public void analyze() {
+  public void analyze(Mat inputImg) {
     long startTime = Instant.now().toEpochMilli();
-
-    long frameTime = inputStream.grabFrame(inputImg);
-
-    // Notify output of error and skip iteration
-    if (frameTime == 0) {
-      outputStream.notifyError(inputStream.getError());
-      return;
-    }
 
     outputImg = inputImg.clone();
 
