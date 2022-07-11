@@ -2,6 +2,7 @@ package frcPi.Utils;
 
 import java.util.Optional;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 import frcPi.Variables;
@@ -34,4 +35,19 @@ public class NetworkManager {
     }
   }
 
+  private double getDouble(NetworkTableEntry e) {
+    return e.getValue().getDouble();
+  }
+
+  private boolean getBoolean(NetworkTableEntry e) {
+    return e.getValue().getBoolean();
+  }
+
+  private String getString(NetworkTableEntry e) {
+    return e.getValue().getString();
+  }
+
+  private double[] getArray(NetworkTableEntry e) {
+    return e.getValue().getDoubleArray();
+  }
 }
