@@ -42,7 +42,7 @@ public class StartCamera {
    */
   public MjpegServer startSwitchedCamera(SwitchedCameraConfig config) {
     System.out.println("Starting switched camera '" + config.name + "' on " + config.key);
-    MjpegServer server = CameraServer.getInstance().addSwitchedCamera(config.name);
+    MjpegServer server = CameraServer.addSwitchedCamera(config.name);
 
     NetworkTableInstance.getDefault()
         .getEntry(config.key)

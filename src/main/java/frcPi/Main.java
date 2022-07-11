@@ -1,9 +1,9 @@
 package frcPi;
 // Copyright (c) FIRST and other WPILib contributors.
+
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-import frcPi.Utils.NetworkManager;
 import frcPi.Vision.VisionManager;
 
 /*
@@ -51,12 +51,12 @@ import frcPi.Vision.VisionManager;
 
 public final class Main {
   private static VisionManager visManage = new VisionManager();
-  private static NetworkManager netWrk = NetworkManager.getInstance();
 
   private static Variables vars = Variables.getInstance();
   public static EasyNetworkTableExample ez_b = new EasyNetworkTableExample();
 
-  private Main() {} // doesn't seem to do anything but leave it in
+  private Main() {
+  } // doesn't seem to do anything but leave it in
 
   /**
    * Main.
@@ -66,10 +66,8 @@ public final class Main {
       vars.configFile = args[0];
     }
 
-
     visManage.startVisionThreads();
 
-    
     // loop forever
     for (;;) {
       ez_b.periodic();
