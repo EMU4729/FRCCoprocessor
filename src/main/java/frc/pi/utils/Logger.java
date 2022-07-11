@@ -1,8 +1,8 @@
-package frcPi.Utils;
+package frc.pi.utils;
 
 import java.util.Optional;
 
-import frcPi.Variables;
+import frc.pi.Variables;
 
 public class Logger {
   private static Optional<Logger> instance;

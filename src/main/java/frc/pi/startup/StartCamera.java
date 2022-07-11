@@ -1,4 +1,4 @@
-package frcPi.Startup;
+package frc.pi.startup;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -9,10 +9,9 @@ import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoSource;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableInstance;
-
-import frcPi.Utils.SwitchedCameraConfig;
-import frcPi.Utils.CameraConfig;
-import frcPi.Variables;
+import frc.pi.utils.CameraConfig;
+import frc.pi.utils.SwitchedCameraConfig;
+import frc.pi.Variables;
 
 public class StartCamera {
   private Variables vars = Variables.getInstance();

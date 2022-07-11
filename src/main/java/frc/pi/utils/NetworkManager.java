@@ -1,11 +1,10 @@
-package frcPi.Utils;
+package frc.pi.utils;
 
 import java.util.Optional;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-
-import frcPi.Variables;
+import frc.pi.Variables;
 
 public class NetworkManager {
   private static Optional<NetworkManager> inst;

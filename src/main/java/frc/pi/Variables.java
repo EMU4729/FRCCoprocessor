@@ -1,13 +1,12 @@
-package frcPi;
+package frc.pi;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import frcPi.Utils.CameraConfig;
-import frcPi.Utils.SwitchedCameraConfig;
-
 import edu.wpi.first.cscore.VideoSource;
+import frc.pi.utils.CameraConfig;
+import frc.pi.utils.SwitchedCameraConfig;
 
 public class Variables {
   private static Optional<Variables> instance;

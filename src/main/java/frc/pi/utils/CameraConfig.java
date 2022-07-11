@@ -1,4 +1,4 @@
-package frcPi.Utils;
+package frc.pi.utils;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonElement;

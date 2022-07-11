@@ -1,13 +1,12 @@
-package frcPi.Vision;
+package frc.pi.vision;
 
 import edu.wpi.first.vision.VisionPipeline;
 import edu.wpi.first.vision.VisionThread;
-
-import frcPi.Startup.ReadConfig;
-import frcPi.Startup.StartCamera;
-import frcPi.Utils.SwitchedCameraConfig;
-import frcPi.Utils.CameraConfig;
-import frcPi.Variables;
+import frc.pi.startup.ReadConfig;
+import frc.pi.startup.StartCamera;
+import frc.pi.utils.CameraConfig;
+import frc.pi.utils.SwitchedCameraConfig;
+import frc.pi.Variables;
 
 import org.opencv.core.Mat;
 

@@ -1,4 +1,4 @@
-package frcPi.Startup;
+package frc.pi.startup;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,10 +9,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import frcPi.Variables;
-import frcPi.Utils.Logger;
-import frcPi.Utils.CameraConfig;
-import frcPi.Utils.SwitchedCameraConfig;
+import frc.pi.utils.CameraConfig;
+import frc.pi.utils.Logger;
+import frc.pi.utils.SwitchedCameraConfig;
+import frc.pi.Variables;
 
 public final class ReadConfig {
   private Logger logger = Logger.getIntstance();
