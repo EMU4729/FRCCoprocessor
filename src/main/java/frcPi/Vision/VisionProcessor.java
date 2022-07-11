@@ -2,6 +2,9 @@ package frcPi.Vision;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -22,16 +25,19 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class VisionProcessor {
-  public final int WIDTH = 100;
-  public final int HEIGHT = 100;
+  private final int WIDTH = 100;
+  private final int HEIGHT = 100;
 
-  public final CvSink inputStream;
-  public final CvSource outputStream;
-  public final NetworkTableEntry targetXEntry;
-  public final NetworkTableEntry targetYEntry;
+  private final CvSink inputStream;
+  private final CvSource outputStream;
+  private final NetworkTableEntry targetXEntry;
+  private final NetworkTableEntry targetYEntry;
 
-  public Mat inputImg = new Mat();
-  public Mat outputImg = new Mat();
+  private Mat inputImg = new Mat();
+  private Mat outputImg = new Mat();
+
+  private List<Double> xList = new ArrayList<>();
+  private List<Double> yList = new ArrayList<>();
 
   public VisionProcessor() {
     CameraServer.startAutomaticCapture();
@@ -61,29 +67,49 @@ public class VisionProcessor {
     Imgproc.cvtColor(inputImg, inputImg, Imgproc.COLOR_BGR2HSV);
     Core.inRange(inputImg, new Scalar(65, 65, 200), new Scalar(85, 255, 255), inputImg);
 
+    // Find all contours
     Mat _hierarchy = new Mat();
-    ArrayList<MatOfPoint> contours = new ArrayList<>();
+    List<MatOfPoint> contours = new ArrayList<>();
     Imgproc.findContours(inputImg, contours, _hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
     for (MatOfPoint contour : contours) {
+      // This is just to appease the compiler
       MatOfPoint2f contour2f = new MatOfPoint2f(contour.toArray());
+
+      // Ignore contours with low area (noise)
       if (Imgproc.contourArea(contour) < 15) {
         continue;
       }
 
+      // I forgot what this does
       RotatedRect rect = Imgproc.minAreaRect(contour2f);
 
       Point center = rect.center;
-      Size size = rect.size;
-      double angle = rect.angle;
 
       Mat boxPoints = new Mat();
-      ArrayList<Mat> boxPointsList = new ArrayList<>();
-      boxPointsList.add(boxPoints);
+      List<MatOfPoint> boxPointsList = new ArrayList<>();
+      boxPointsList.add(new MatOfPoint(boxPoints));
 
+      // Draw contour onto output
       Imgproc.drawContours(outputImg, boxPointsList, -1, new Scalar(0, 0, 255));
+      Imgproc.circle(outputImg, center, 3, new Scalar(0, 0, 255));
 
+      // Add data points to output lists
+      xList.add((center.x - WIDTH / 2) / (WIDTH / 2));
+      yList.add((center.y - WIDTH / 2) / (WIDTH / 2));
     }
 
+    // Send output lists through NetworkTables
+    targetXEntry.setDoubleArray(xList.stream().mapToDouble(i -> i).toArray());
+    targetYEntry.setDoubleArray(yList.stream().mapToDouble(i -> i).toArray());
+
+    // Calculate and display FPS
+    long processingTime = Instant.now().toEpochMilli() - startTime;
+    double fps = 1 / processingTime;
+    Imgproc.putText(outputImg, String.valueOf((int) Math.round(fps)), new Point(0, 40), Imgproc.FONT_HERSHEY_SIMPLEX, 1,
+        new Scalar(255, 255, 255));
+
+    // Send frame into output stream
+    outputStream.putFrame(outputImg);
   }
 }
