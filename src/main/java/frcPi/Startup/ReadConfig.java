@@ -18,7 +18,7 @@ public final class ReadConfig {
   private Logger logger = Logger.getIntstance();
   private Variables values = Variables.getInstance();
 
-    /**
+  /**
    * Read configuration file.
    */
   @SuppressWarnings("PMD.CyclomaticComplexity")
@@ -112,7 +112,7 @@ public final class ReadConfig {
     return true;
   }
 
-    /**
+  /**
    * Read single switched camera configuration.
    */
   public boolean readSwitchedCameraConfig(JsonObject config) {

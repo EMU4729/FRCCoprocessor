@@ -12,17 +12,18 @@ public class NetworkManager {
   private NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
   private Variables vars = Variables.getInstance();
 
-  private NetworkManager(){
+  private NetworkManager() {
     startNetwork();
   }
-  public static NetworkManager getInstance(){
-    if(inst.isEmpty()){
+
+  public static NetworkManager getInstance() {
+    if (inst.isEmpty()) {
       inst = Optional.of(new NetworkManager());
     }
     return inst.get();
   }
 
-  private void startNetwork(){
+  private void startNetwork() {
     if (vars.server) {
       System.out.println("Setting up NetworkTables server");
       ntinst.startServer();
@@ -30,7 +31,7 @@ public class NetworkManager {
       System.out.println("Setting up NetworkTables client for team " + vars.team);
       ntinst.startClientTeam(vars.team);
       ntinst.startDSClient();
-    }    
+    }
   }
-  
+
 }

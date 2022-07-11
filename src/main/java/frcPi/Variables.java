@@ -1,4 +1,5 @@
 package frcPi;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -6,14 +7,16 @@ import java.util.Optional;
 import frcPi.Utils.CameraConfig;
 import frcPi.Utils.SwitchedCameraConfig;
 
-
 import edu.wpi.first.cscore.VideoSource;
 
 public class Variables {
   private static Optional<Variables> instance;
-  private Variables(){}
-  public static Variables getInstance(){
-    if(instance.isEmpty()){
+
+  private Variables() {
+  }
+
+  public static Variables getInstance() {
+    if (instance.isEmpty()) {
       instance = Optional.of(new Variables());
     }
     return instance.get();

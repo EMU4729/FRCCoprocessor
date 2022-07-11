@@ -12,14 +12,14 @@ import frcPi.Variables;
 import org.opencv.core.Mat;
 
 public class VisionManager {
-  private static ReadConfig Config = new ReadConfig();
+  private static ReadConfig config = new ReadConfig();
   private static StartCamera camStart = new StartCamera();
 
   private static Variables vars = Variables.getInstance();
 
   public void startVisionThreads() {
     // read configuration
-    if (!Config.readConfig()) {
+    if (!config.readConfig()) {
       return;
     }
     // start cameras
