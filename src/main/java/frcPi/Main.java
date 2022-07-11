@@ -3,16 +3,8 @@ package frcPi;
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.vision.VisionPipeline;
-import edu.wpi.first.vision.VisionThread;
-
-import frcPi.Startup.ReadConfig;
-import frcPi.Startup.StartCamera;
-import frcPi.Utils.SwitchedCameraConfig;
-import frcPi.Utils.CameraConfig;
-
-import org.opencv.core.Mat;
+import frcPi.Utils.NetworkManager;
+import frcPi.Vision.VisionManager;
 
 /*
    JSON format:
@@ -58,27 +50,13 @@ import org.opencv.core.Mat;
  */
 
 public final class Main {
-  private static ReadConfig Config = new ReadConfig();
-  private static StartCamera camStart = new StartCamera();
+  private static VisionManager visManage = new VisionManager();
+  private static NetworkManager netWrk = NetworkManager.getInstance();
 
   private static Variables vars = Variables.getInstance();
   public static EasyNetworkTableExample ez_b = new EasyNetworkTableExample();
 
-  private Main() {
-  }
-
-  
-  /**
-   * Example pipeline.
-   */
-  public static class MyPipeline implements VisionPipeline {
-    public int val;
-
-    @Override
-    public void process(Mat mat) {
-      val += 1;
-    }
-  }
+  private Main() {} // doesn't seem to do anything but leave it in
 
   /**
    * Main.
@@ -88,47 +66,9 @@ public final class Main {
       vars.configFile = args[0];
     }
 
-    // read configuration
-    if (!Config.readConfig()) {
-      return;
-    }
 
-    // start NetworkTables
-    NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
-    if (vars.server) {
-      System.out.println("Setting up NetworkTables server");
-      ntinst.startServer();
-    } else {
-      System.out.println("Setting up NetworkTables client for team " + vars.team);
-      ntinst.startClientTeam(vars.team);
-      ntinst.startDSClient();
-    }
+    visManage.startVisionThreads();
 
-    // start cameras
-    for (CameraConfig config : vars.cameraConfigs) {
-      vars.cameras.add(camStart.startCamera(config));
-    }
-
-    // start switched cameras
-    for (SwitchedCameraConfig config : vars.switchedCameraConfigs) {
-      camStart.startSwitchedCamera(config);
-    }
-
-    // start image processing on camera 0 if present
-    if (vars.cameras.size() >= 1) {
-      VisionThread visionThread = new VisionThread(vars.cameras.get(0),
-              new MyPipeline(), pipeline -> {
-        // do something with pipeline results
-      });
-      /* something like this for GRIP:
-      VisionThread visionThread = new VisionThread(cameras.get(0),
-              new GripPipeline(), pipeline -> {
-        ...
-      });
-       */
-
-      visionThread.start();
-    }
     
     // loop forever
     for (;;) {

@@ -6,8 +6,6 @@ import java.util.Optional;
 import frcPi.Utils.CameraConfig;
 import frcPi.Utils.SwitchedCameraConfig;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 import edu.wpi.first.cscore.VideoSource;
 
