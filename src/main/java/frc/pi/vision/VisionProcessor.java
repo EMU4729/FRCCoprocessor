@@ -20,8 +20,8 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class VisionProcessor {
-  private final int WIDTH = 1600;
-  private final int HEIGHT = 1200;
+  private final int WIDTH = 640;
+  private final int HEIGHT = 480;
 
   private final CvSource outputStream;
   private final NetworkTableEntry targetXEntry;
