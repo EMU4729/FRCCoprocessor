@@ -20,8 +20,8 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class VisionProcessor {
-  private final int WIDTH = 100;
-  private final int HEIGHT = 100;
+  private final int WIDTH = 1600;
+  private final int HEIGHT = 1200;
 
   private final CvSource outputStream;
   private final NetworkTableEntry targetXEntry;
@@ -92,7 +92,7 @@ public class VisionProcessor {
     Imgproc.putText(outputImg, String.valueOf((int) Math.round(fps)), new Point(0, 40), Imgproc.FONT_HERSHEY_SIMPLEX, 1,
         new Scalar(255, 255, 255));
 
-    // Send frame into output stream
+    // Send frame to output stream
     outputStream.putFrame(outputImg);
   }
 }
