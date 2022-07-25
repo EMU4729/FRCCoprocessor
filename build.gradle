@@ -4,7 +4,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '4.0.3' apply false
 }
 
-mainClassName = 'Main'
+mainClassName = 'main.java.frc.pi.Main'
 
 apply plugin: 'com.github.johnrengelman.shadow'
 
@@ -26,6 +26,7 @@ dependencies {
     compile name: 'wpilibj'
     compile name: 'wpiHal'
 }
+
 
 wrapper {
     gradleVersion = '5.0'
