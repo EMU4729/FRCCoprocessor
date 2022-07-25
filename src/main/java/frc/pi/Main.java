@@ -50,7 +50,6 @@ public final class Main {
   private static VisionManager visManage = new VisionManager();
 
   private static Variables vars = Variables.getInstance();
-  public static EasyNetworkTableExample example = new EasyNetworkTableExample();
 
   private Main() {
   } // doesn't seem to do anything but leave it in
@@ -67,7 +66,6 @@ public final class Main {
 
     // loop forever
     for (;;) {
-      example.periodic();
       try {
         Thread.sleep(100);
       } catch (InterruptedException ex) {

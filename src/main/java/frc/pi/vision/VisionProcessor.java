@@ -41,6 +41,10 @@ public class VisionProcessor {
     targetYEntry = nt.getEntry("y");
   }
 
+  public void debug(Mat inputImg) {
+    outputStream.putFrame(inputImg);
+  }
+
   public void analyze(Mat inputImg) {
     long startTime = Instant.now().toEpochMilli();
 
@@ -64,7 +68,7 @@ public class VisionProcessor {
         continue;
       }
 
-      // I forgot what this does
+      // Gets the rectangle surrounding the contour
       RotatedRect rect = Imgproc.minAreaRect(contour2f);
 
       Point center = rect.center;

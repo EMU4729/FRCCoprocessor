@@ -34,8 +34,8 @@ public class VisionManager {
     // start image processing on camera 0 if present
     if (vars.cameras.size() >= 1) {
       VisionThread visionThread = new VisionThread(vars.cameras.get(0),
-          new MyPipeline(), pipeline -> {
-            // do something with pipeline results
+          new Pipeline(), pipeline -> {
+            System.out.println("The pipeline ran yo");
           });
       /*
        * something like this for GRIP:
@@ -52,12 +52,13 @@ public class VisionManager {
   /**
    * Example pipeline.
    */
-  public static class MyPipeline implements VisionPipeline {
+  public static class Pipeline implements VisionPipeline {
     public final VisionProcessor processor = new VisionProcessor();
 
     @Override
     public void process(Mat mat) {
-      processor.analyze(mat);
+      // processor.analyze(mat);
+      processor.debug(mat);
     }
   }
 }
