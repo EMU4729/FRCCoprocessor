@@ -9,7 +9,7 @@ import frc.pi.utils.CameraConfig;
 import frc.pi.utils.SwitchedCameraConfig;
 
 public class Variables {
-  private static Optional<Variables> instance;
+  private static Optional<Variables> instance = Optional.empty();
 
   private Variables() {
   }

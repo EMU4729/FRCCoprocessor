@@ -35,7 +35,6 @@ public class VisionManager {
     if (vars.cameras.size() >= 1) {
       VisionThread visionThread = new VisionThread(vars.cameras.get(0),
           new Pipeline(), pipeline -> {
-            System.out.println("The pipeline ran yo");
           });
       /*
        * something like this for GRIP:
@@ -57,8 +56,8 @@ public class VisionManager {
 
     @Override
     public void process(Mat mat) {
-      // processor.analyze(mat);
-      processor.debug(mat);
+      processor.analyze(mat);
+      // processor.debug(mat);
     }
   }
 }

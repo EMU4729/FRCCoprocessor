@@ -5,7 +5,7 @@ import java.util.Optional;
 import frc.pi.Variables;
 
 public class Logger {
-  private static Optional<Logger> instance;
+  private static Optional<Logger> instance = Optional.empty();
   private Variables values = Variables.getInstance();
 
   private Logger() {

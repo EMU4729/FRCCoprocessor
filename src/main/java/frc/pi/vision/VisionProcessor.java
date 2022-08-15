@@ -27,7 +27,7 @@ public class VisionProcessor {
   private final NetworkTableEntry targetXEntry;
   private final NetworkTableEntry targetYEntry;
 
-  private Mat outputImg = new Mat();
+  private Mat outputImg;
 
   private List<Double> xList = new ArrayList<>();
   private List<Double> yList = new ArrayList<>();
