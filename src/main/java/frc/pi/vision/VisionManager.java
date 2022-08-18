@@ -55,8 +55,8 @@ public class VisionManager {
     public final VisionProcessor processor = new VisionProcessor();
 
     @Override
-    public void process(Mat mat) {
-      processor.analyze(mat);
+    public void process(Mat _mat) {
+      processor.analyze();
       // processor.debug(mat);
     }
   }

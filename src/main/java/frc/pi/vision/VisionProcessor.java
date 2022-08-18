@@ -16,7 +16,6 @@ import org.opencv.imgproc.Imgproc;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
-import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -26,6 +25,7 @@ public class VisionProcessor {
   private final int HEIGHT = 480;
 
   private final CvSource outputStream;
+  private final CvSink inputStream;
   private final NetworkTableEntry targetXEntry;
   private final NetworkTableEntry targetYEntry;
 
@@ -36,6 +36,7 @@ public class VisionProcessor {
 
   public VisionProcessor() {
     outputStream = CameraServer.putVideo("Processed", WIDTH, HEIGHT);
+    inputStream = CameraServer.getVideo();
 
     NetworkTableInstance ntInstance = NetworkTableInstance.getDefault();
     NetworkTable nt = ntInstance.getTable("Vision");
@@ -47,7 +48,14 @@ public class VisionProcessor {
     outputStream.putFrame(inputImg);
   }
 
-  public void analyze(Mat inputImg) {
+  public void analyze() {
+    Mat inputImg = new Mat();
+    if (inputStream.grabFrame(inputImg) == 0) {
+      // Send the output the error.
+      outputStream.notifyError(inputStream.getError());
+      // skip the rest of the current iteration
+      return;
+    }
     long startTime = Instant.now().toEpochMilli();
 
     outputImg = inputImg.clone();
@@ -76,7 +84,7 @@ public class VisionProcessor {
       Point center = rect.center;
 
       Mat boxPoints = new Mat();
-      List<MatOfPoint> boxPointsList = new ArrayList<>();
+      List<MatOfPoint> boxPointsList = new ArrayList<MatOfPoint>();
       boxPointsList.add(new MatOfPoint(boxPoints));
 
       // Draw contour onto output
@@ -95,33 +103,11 @@ public class VisionProcessor {
     // Calculate and display FPS
     long processingTime = Instant.now().toEpochMilli() - startTime;
     double fps = 1 / processingTime;
-    Imgproc.putText(outputImg, String.valueOf((int) Math.round(fps)), new Point(100, 140), Imgproc.FONT_HERSHEY_SIMPLEX, 1,
+    Imgproc.putText(outputImg, String.valueOf((int) Math.round(fps)), new Point(10, 25), Imgproc.FONT_HERSHEY_SIMPLEX, 1,
         new Scalar(255, 0, 0));
-        
-    Imgproc.rectangle(outputImg, new Point(100, 100), new Point(400, 400), new Scalar(255, 255, 255), 5);
 
     // Send frame to output stream
     outputStream.putFrame(outputImg);
-
-    Mat mat = new Mat();
-    
-              // Get a CvSink. This will capture Mats from the camera
-              CvSink cvSink = CameraServer.getVideo();
-              // Setup a CvSource. This will send images back to the Dashboard
-              CvSource outputStream = CameraServer.putVideo("Rectangle", 640, 480);
-
-
-    if (cvSink.grabFrame(mat) == 0) {
-      // Send the output the error.
-      outputStream.notifyError(cvSink.getError());
-      // skip the rest of the current iteration
-      return;
-    }
-    // Put a rectangle on the image
-    Imgproc.rectangle(
-        mat, new Point(100, 100), new Point(400, 400), new Scalar(255, 255, 255), 5);
-    // Give the output stream a new image to display
-    outputStream.putFrame(mat);
-
+    System.out.println("KB: " + (double) (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024);
   }
 }
