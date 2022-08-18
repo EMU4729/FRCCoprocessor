@@ -23,8 +23,8 @@ public class Variables {
 
   public String configFile = "/boot/frc.json";
 
-  public int team;
-  public boolean server;
+  public int team = 4729;
+  public boolean server = false;
   public List<CameraConfig> cameraConfigs = new ArrayList<>();
   public List<SwitchedCameraConfig> switchedCameraConfigs = new ArrayList<>();
   public List<VideoSource> cameras = new ArrayList<>();

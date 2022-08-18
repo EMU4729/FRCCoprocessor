@@ -7,7 +7,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.pi.Variables;
 
 public class NetworkManager {
-  private static Optional<NetworkManager> inst;
+  private static Optional<NetworkManager> inst = Optional.empty();
 
   private NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
   private Variables vars = Variables.getInstance();

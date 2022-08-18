@@ -1,6 +1,7 @@
 package frc.pi;
 // Copyright (c) FIRST and other WPILib contributors.
 
+import frc.pi.utils.NetworkManager;
 import frc.pi.vision.VisionManager;
 
 /*
@@ -48,6 +49,7 @@ import frc.pi.vision.VisionManager;
 
 public final class Main {
   private static VisionManager visManage = new VisionManager();
+  private static NetworkManager _netManage = NetworkManager.getInstance();
 
   private static Variables vars = Variables.getInstance();
 
