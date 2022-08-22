@@ -2,7 +2,6 @@ package frc.pi.vision;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -27,13 +26,11 @@ public class VisionProcessor {
   private final CvSink inputStream;
   private final CvSource analysisOutStream;
   private final CvSource rawOutStream;
+
   private final NetworkTableEntry targetXEntry;
   private final NetworkTableEntry targetYEntry;
 
   private Mat img;
-
-  private List<Double> xList = new ArrayList<>();
-  private List<Double> yList = new ArrayList<>();
 
   public VisionProcessor() {
     inputStream = CameraServer.getVideo();
@@ -71,6 +68,10 @@ public class VisionProcessor {
     List<MatOfPoint> contours = new ArrayList<>();
     Imgproc.findContours(img, contours, _hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
+    if (contours.size() == 0) {
+      return;
+    }
+
     MatOfPoint contour = contours.stream().reduce(contours.get(0), (max, current) -> {
       if (Imgproc.contourArea(current) > Imgproc.contourArea(max)) {
         return current;
@@ -85,14 +86,10 @@ public class VisionProcessor {
     // Draw the contour
     Imgproc.rectangle(img, rect.boundingRect(), new Scalar(255, 0, 0));
 
-    // Add data points to output lists
+    // Send data through NetworkTables
     Point center = rect.center;
-    xList.add((center.x - WIDTH / 2) / (WIDTH / 2));
-    yList.add((center.y - WIDTH / 2) / (WIDTH / 2));
-
-    // Send output lists through NetworkTables
-    targetXEntry.setDoubleArray(xList.stream().mapToDouble(i -> i).toArray());
-    targetYEntry.setDoubleArray(yList.stream().mapToDouble(i -> i).toArray());
+    targetXEntry.setNumber((center.x - WIDTH / 2) / (WIDTH / 2));
+    targetYEntry.setNumber((center.y - WIDTH / 2) / (WIDTH / 2));
 
     // Send frame to output stream
     analysisOutStream.putFrame(img);
