@@ -64,40 +64,31 @@ public class VisionProcessor {
 
     // Convert to HSV and threshold image
     Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2HSV);
-    Core.inRange(img,
-        new Scalar(90, 0, 155),
-        new Scalar(150, 255, 255),
-        img);
+    Core.inRange(img, new Scalar(0, 0, 200), new Scalar(180, 50, 255), img);
 
     // Find all contours
     Mat _hierarchy = new Mat();
     List<MatOfPoint> contours = new ArrayList<>();
     Imgproc.findContours(img, contours, _hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
-    contours = contours.stream().filter(contour -> {
-      // Ignore contours with low area (noise)
-      if (Imgproc.contourArea(contour) < 15) {
-        return false;
+    MatOfPoint contour = contours.stream().reduce(contours.get(0), (max, current) -> {
+      if (Imgproc.contourArea(current) > Imgproc.contourArea(max)) {
+        return current;
+      } else {
+        return max;
       }
+    });
 
-      // Gets the rectangle surrounding the contour
-      MatOfPoint2f contour2f = new MatOfPoint2f(contour.toArray()); // This is just to appease the compiler
-      RotatedRect rect = Imgproc.minAreaRect(contour2f);
+    MatOfPoint2f contour2f = new MatOfPoint2f(contour.toArray()); // This is just to appease the compiler
+    RotatedRect rect = Imgproc.minAreaRect(contour2f);
 
-      Point center = rect.center;
+    // Draw the contour
+    Imgproc.rectangle(img, rect.boundingRect(), new Scalar(255, 0, 0));
 
-      // Draw contour onto output
-      Imgproc.circle(img, center, 3, new Scalar(0, 0, 255));
-
-      // Add data points to output lists
-      xList.add((center.x - WIDTH / 2) / (WIDTH / 2));
-      yList.add((center.y - WIDTH / 2) / (WIDTH / 2));
-
-      return true;
-    }).collect(Collectors.toCollection(ArrayList::new));
-
-    // Draw all contours
-    Imgproc.drawContours(img, contours, -1, new Scalar(0, 0, 255));
+    // Add data points to output lists
+    Point center = rect.center;
+    xList.add((center.x - WIDTH / 2) / (WIDTH / 2));
+    yList.add((center.y - WIDTH / 2) / (WIDTH / 2));
 
     // Send output lists through NetworkTables
     targetXEntry.setDoubleArray(xList.stream().mapToDouble(i -> i).toArray());
