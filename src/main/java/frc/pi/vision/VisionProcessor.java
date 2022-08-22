@@ -1,8 +1,8 @@
 package frc.pi.vision;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -16,7 +16,6 @@ import org.opencv.imgproc.Imgproc;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
-import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -25,17 +24,21 @@ public class VisionProcessor {
   private final int WIDTH = 640;
   private final int HEIGHT = 480;
 
-  private final CvSource outputStream;
+  private final CvSink inputStream;
+  private final CvSource analysisOutStream;
+  private final CvSource rawOutStream;
   private final NetworkTableEntry targetXEntry;
   private final NetworkTableEntry targetYEntry;
 
-  private Mat outputImg;
+  private Mat img;
 
   private List<Double> xList = new ArrayList<>();
   private List<Double> yList = new ArrayList<>();
 
   public VisionProcessor() {
-    outputStream = CameraServer.putVideo("Processed", WIDTH, HEIGHT);
+    inputStream = CameraServer.getVideo();
+    analysisOutStream = CameraServer.putVideo("Analyzed", WIDTH, HEIGHT);
+    rawOutStream = CameraServer.putVideo("Raw", WIDTH, HEIGHT);
 
     NetworkTableInstance ntInstance = NetworkTableInstance.getDefault();
     NetworkTable nt = ntInstance.getTable("Vision");
@@ -43,85 +46,72 @@ public class VisionProcessor {
     targetYEntry = nt.getEntry("y");
   }
 
-  public void debug(Mat inputImg) {
-    outputStream.putFrame(inputImg);
+  public void debug() {
+    if (inputStream.grabFrame(img) == 0) {
+      analysisOutStream.notifyError(inputStream.getError());
+      return;
+    }
+    analysisOutStream.putFrame(img);
   }
 
-  public void analyze(Mat inputImg) {
-    long startTime = Instant.now().toEpochMilli();
+  public void raw() {
+    img = new Mat();
+    if (inputStream.grabFrame(img) == 0) {
+      rawOutStream.notifyError(inputStream.getError());
+      return;
+    }
+    rawOutStream.putFrame(img);
+  }
 
-    outputImg = inputImg.clone();
+  public void analyze() {
+    img = new Mat();
+    if (inputStream.grabFrame(img) == 0) {
+      analysisOutStream.notifyError(inputStream.getError());
+      return;
+    }
 
     // Convert to HSV and threshold image
-    Imgproc.cvtColor(inputImg, inputImg, Imgproc.COLOR_BGR2HSV);
-    Core.inRange(inputImg, new Scalar(65, 65, 200), new Scalar(85, 255, 255), inputImg);
+    Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2HSV);
+    Core.inRange(img,
+        new Scalar(90, 0, 155),
+        new Scalar(150, 255, 255),
+        img);
 
     // Find all contours
     Mat _hierarchy = new Mat();
     List<MatOfPoint> contours = new ArrayList<>();
-    Imgproc.findContours(inputImg, contours, _hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+    Imgproc.findContours(img, contours, _hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
-    for (MatOfPoint contour : contours) {
-      // This is just to appease the compiler
-      MatOfPoint2f contour2f = new MatOfPoint2f(contour.toArray());
-
+    contours = contours.stream().filter(contour -> {
       // Ignore contours with low area (noise)
       if (Imgproc.contourArea(contour) < 15) {
-        continue;
+        return false;
       }
 
       // Gets the rectangle surrounding the contour
+      MatOfPoint2f contour2f = new MatOfPoint2f(contour.toArray()); // This is just to appease the compiler
       RotatedRect rect = Imgproc.minAreaRect(contour2f);
 
       Point center = rect.center;
 
-      Mat boxPoints = new Mat();
-      List<MatOfPoint> boxPointsList = new ArrayList<>();
-      boxPointsList.add(new MatOfPoint(boxPoints));
-
       // Draw contour onto output
-      Imgproc.drawContours(outputImg, boxPointsList, -1, new Scalar(0, 0, 255));
-      Imgproc.circle(outputImg, center, 3, new Scalar(0, 0, 255));
+      Imgproc.circle(img, center, 3, new Scalar(0, 0, 255));
 
       // Add data points to output lists
       xList.add((center.x - WIDTH / 2) / (WIDTH / 2));
       yList.add((center.y - WIDTH / 2) / (WIDTH / 2));
-    }
+
+      return true;
+    }).collect(Collectors.toCollection(ArrayList::new));
+
+    // Draw all contours
+    Imgproc.drawContours(img, contours, -1, new Scalar(0, 0, 255));
 
     // Send output lists through NetworkTables
     targetXEntry.setDoubleArray(xList.stream().mapToDouble(i -> i).toArray());
     targetYEntry.setDoubleArray(yList.stream().mapToDouble(i -> i).toArray());
 
-    // Calculate and display FPS
-    long processingTime = Instant.now().toEpochMilli() - startTime;
-    double fps = 1 / processingTime;
-    Imgproc.putText(outputImg, String.valueOf((int) Math.round(fps)), new Point(100, 140), Imgproc.FONT_HERSHEY_SIMPLEX, 1,
-        new Scalar(255, 0, 0));
-        
-    Imgproc.rectangle(outputImg, new Point(100, 100), new Point(400, 400), new Scalar(255, 255, 255), 5);
-
     // Send frame to output stream
-    outputStream.putFrame(outputImg);
-
-    Mat mat = new Mat();
-    
-              // Get a CvSink. This will capture Mats from the camera
-              CvSink cvSink = CameraServer.getVideo();
-              // Setup a CvSource. This will send images back to the Dashboard
-              CvSource outputStream = CameraServer.putVideo("Rectangle", 640, 480);
-
-
-    if (cvSink.grabFrame(mat) == 0) {
-      // Send the output the error.
-      outputStream.notifyError(cvSink.getError());
-      // skip the rest of the current iteration
-      return;
-    }
-    // Put a rectangle on the image
-    Imgproc.rectangle(
-        mat, new Point(100, 100), new Point(400, 400), new Scalar(255, 255, 255), 5);
-    // Give the output stream a new image to display
-    outputStream.putFrame(mat);
-
+    analysisOutStream.putFrame(img);
   }
 }
