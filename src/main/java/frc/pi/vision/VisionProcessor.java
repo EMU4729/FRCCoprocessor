@@ -46,14 +46,6 @@ public class VisionProcessor {
     targetYEntry = nt.getEntry("y");
   }
 
-  public void debug() {
-    if (inputStream.grabFrame(img) == 0) {
-      analysisOutStream.notifyError(inputStream.getError());
-      return;
-    }
-    analysisOutStream.putFrame(img);
-  }
-
   public void raw() {
     img = new Mat();
     if (inputStream.grabFrame(img) == 0) {

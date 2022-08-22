@@ -58,7 +58,6 @@ public class VisionManager {
     public void process(Mat _mat) {
       processor.raw();
       processor.analyze();
-      // processor.debug();
     }
   }
 }
