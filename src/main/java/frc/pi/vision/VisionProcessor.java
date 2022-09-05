@@ -36,6 +36,7 @@ public class VisionProcessor {
     inputStream = CameraServer.getVideo();
     analysisOutStream = CameraServer.putVideo("Analyzed", WIDTH, HEIGHT);
     rawOutStream = CameraServer.putVideo("Raw", WIDTH, HEIGHT);
+    img = new Mat();
 
     NetworkTableInstance ntInstance = NetworkTableInstance.getDefault();
     NetworkTable nt = ntInstance.getTable("Vision");
@@ -44,7 +45,6 @@ public class VisionProcessor {
   }
 
   public void raw() {
-    img = new Mat();
     if (inputStream.grabFrame(img) == 0) {
       rawOutStream.notifyError(inputStream.getError());
       return;
@@ -53,7 +53,6 @@ public class VisionProcessor {
   }
 
   public void analyze() {
-    img = new Mat();
     if (inputStream.grabFrame(img) == 0) {
       analysisOutStream.notifyError(inputStream.getError());
       return;
@@ -67,21 +66,32 @@ public class VisionProcessor {
     Mat _hierarchy = new Mat();
     List<MatOfPoint> contours = new ArrayList<>();
     Imgproc.findContours(img, contours, _hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+    _hierarchy.release();
 
     if (contours.size() == 0) {
       return;
     }
 
-    MatOfPoint contour = contours.stream().reduce(contours.get(0), (max, current) -> {
-      if (Imgproc.contourArea(current) > Imgproc.contourArea(max)) {
-        return current;
-      } else {
-        return max;
+    MatOfPoint contour = contours.stream().reduce(contours.get(0),
+        (max, current) -> {
+          if (Imgproc.contourArea(current) > Imgproc.contourArea(max)) {
+            // max.release();
+            return current;
+          } else {
+            // current.release();
+            return max;
+          }
+        });
+
+    for (MatOfPoint tmp : contours) {
+      if (tmp != contour) {
+        tmp.release();
       }
-    });
+    }
 
     MatOfPoint2f contour2f = new MatOfPoint2f(contour.toArray()); // This is just to appease the compiler
     RotatedRect rect = Imgproc.minAreaRect(contour2f);
+    contour2f.release();
 
     // Draw the contour
     Imgproc.rectangle(img, rect.boundingRect(), new Scalar(255, 0, 0));

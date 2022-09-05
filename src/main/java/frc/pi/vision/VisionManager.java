@@ -56,8 +56,11 @@ public class VisionManager {
 
     @Override
     public void process(Mat _mat) {
+      long tmp1 = Runtime.getRuntime().freeMemory();
       processor.raw();
+      long tmp2 = Runtime.getRuntime().freeMemory();
       processor.analyze();
+      System.out.println(tmp1 + "  " + tmp2 + "  " + Runtime.getRuntime().freeMemory());
     }
   }
 }
