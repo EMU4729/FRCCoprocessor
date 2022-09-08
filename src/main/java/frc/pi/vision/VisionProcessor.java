@@ -61,7 +61,7 @@ public class VisionProcessor {
     // Convert to HSV and threshold image
     Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2HSV);
     Core.inRange(img, new Scalar(0, 0, 200), new Scalar(180, 50, 255), img);
-
+    
     // Find all contours
     Mat _hierarchy = new Mat();
     List<MatOfPoint> contours = new ArrayList<>();
@@ -75,21 +75,20 @@ public class VisionProcessor {
     MatOfPoint contour = contours.stream().reduce(contours.get(0),
         (max, current) -> {
           if (Imgproc.contourArea(current) > Imgproc.contourArea(max)) {
-            // max.release();
             return current;
           } else {
-            // current.release();
             return max;
           }
         });
 
-    for (MatOfPoint tmp : contours) {
-      if (tmp != contour) {
-        tmp.release();
+    for (MatOfPoint c : contours) {
+      if (c != contour) {
+        c.release();
       }
     }
 
     MatOfPoint2f contour2f = new MatOfPoint2f(contour.toArray()); // This is just to appease the compiler
+    contour.release();
     RotatedRect rect = Imgproc.minAreaRect(contour2f);
     contour2f.release();
 
