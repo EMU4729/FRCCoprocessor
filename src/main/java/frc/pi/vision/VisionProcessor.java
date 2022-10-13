@@ -81,14 +81,12 @@ public class VisionProcessor {
           }
         });
 
-    for (MatOfPoint c : contours) {
-      if (c != contour) {
-        c.release();
-      }
-    }
-
     MatOfPoint2f contour2f = new MatOfPoint2f(contour.toArray()); // This is just to appease the compiler
-    contour.release();
+
+    for (MatOfPoint c : contours) {
+      c.release();
+    }
+    
     RotatedRect rect = Imgproc.minAreaRect(contour2f);
     contour2f.release();
 
