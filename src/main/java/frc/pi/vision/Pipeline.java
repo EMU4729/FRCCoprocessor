@@ -69,15 +69,6 @@ public class Pipeline implements VisionPipeline {
   }
 
   public Pipeline() {
-    inputStream = CameraServer.getVideo();
-    outputStream = CameraServer.putVideo("Gripper", WIDTH, HEIGHT);
-    rawOutputStream = CameraServer.putVideo("Raw", WIDTH, HEIGHT);
-    img = new Mat();
-
-    if (inputStream.grabFrame(img) == 0) {
-      outputStream.notifyError(inputStream.getError());
-    }
-
     ShuffleboardTab tab = Shuffleboard.getTab("Gripper Cam");
     boxXEntry = configNumberSliderWidth(tab.add("Box X", 0.)).getEntry();
     boxYEntry = configNumberSliderHeight(tab.add("Box Y", 0.)).getEntry();
@@ -88,6 +79,10 @@ public class Pipeline implements VisionPipeline {
     coneWEntry = configNumberSliderWidth(tab.add("Cone Width", 50.)).getEntry();
     coneHEntry = configNumberSliderHeight(tab.add("Cone Height", 50.)).getEntry();
 
+    inputStream = CameraServer.getVideo();
+    outputStream = CameraServer.putVideo("Gripper", WIDTH, HEIGHT);
+    rawOutputStream = CameraServer.putVideo("Raw", WIDTH, HEIGHT);
+    img = new Mat();
   }
 
   @Override
