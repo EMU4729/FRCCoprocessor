@@ -81,7 +81,7 @@ public class Pipeline implements VisionPipeline {
     tab.add(outputStream).withSize(4, 3).withPosition(0, 0);
     tab.add(rawOutputStream).withSize(4, 3).withPosition(4, 0);
 
-    boxXEntry = configNumberSliderWidth(tab.add("Box X", 0.))..withPosition(0, 3).getEntry();
+    boxXEntry = configNumberSliderWidth(tab.add("Box X", 0.)).withPosition(0, 3).getEntry();
     boxYEntry = configNumberSliderHeight(tab.add("Box Y", 0.)).withPosition(2, 3).getEntry();
     boxWEntry = configNumberSliderWidth(tab.add("Box Width", 50.)).withPosition(4, 3).getEntry();
     boxHEntry = configNumberSliderHeight(tab.add("Box Height", 50.)).withPosition(6, 3).getEntry();
