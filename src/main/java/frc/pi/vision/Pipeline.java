@@ -20,8 +20,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 
 public class Pipeline implements VisionPipeline {
-  private final int WIDTH = 640;
-  private final int HEIGHT = 480;
+  private final int WIDTH = 160;
+  private final int HEIGHT = 120;
 
   private final CvSink inputStream;
   private final CvSource outputStream;
@@ -60,12 +60,12 @@ public class Pipeline implements VisionPipeline {
 
   private SimpleWidget configNumberSliderWidth(SimpleWidget widget) {
     return widget.withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("min", 0, "max", img.width()));
+        .withProperties(Map.of("min", 0, "max", WIDTH));
   }
 
   private SimpleWidget configNumberSliderHeight(SimpleWidget widget) {
     return widget.withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("min", 0, "max", img.height()));
+        .withProperties(Map.of("min", 0, "max", HEIGHT));
   }
 
   public Pipeline() {
@@ -97,7 +97,6 @@ public class Pipeline implements VisionPipeline {
     }
 
     rawOutputStream.putFrame(img);
-    System.out.println(img.width() + " " + img.height());
 
     // Box guide
     Rect boxRect = getBoxRect();
