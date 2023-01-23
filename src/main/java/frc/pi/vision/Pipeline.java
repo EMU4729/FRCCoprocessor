@@ -1,5 +1,7 @@
 package frc.pi.vision;
 
+import java.util.Map;
+
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
@@ -12,8 +14,10 @@ import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.vision.VisionPipeline;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 
 public class Pipeline implements VisionPipeline {
   private final int WIDTH = 640;
@@ -54,16 +58,26 @@ public class Pipeline implements VisionPipeline {
             coneHEntry.get().getDouble()));
   }
 
+  private SimpleWidget configNumberSliderWidth(SimpleWidget widget) {
+    return widget.withWidget(BuiltInWidgets.kNumberSlider)
+        .withProperties(Map.of("min", 0, "max", WIDTH));
+  }
+
+  private SimpleWidget configNumberSliderHeight(SimpleWidget widget) {
+    return widget.withWidget(BuiltInWidgets.kNumberSlider)
+        .withProperties(Map.of("min", 0, "max", HEIGHT));
+  }
+
   public Pipeline() {
     ShuffleboardTab tab = Shuffleboard.getTab("Gripper Cam");
-    boxXEntry = tab.add("Box X", 100.).getEntry();
-    boxYEntry = tab.add("Box Y", 100.).getEntry();
-    boxWEntry = tab.add("Box Width", 100.).getEntry();
-    boxHEntry = tab.add("Box Height", 100.).getEntry();
-    coneXEntry = tab.add("Cone X", 100.).getEntry();
-    coneYEntry = tab.add("Cone Y", 100.).getEntry();
-    coneWEntry = tab.add("Cone Width", 100.).getEntry();
-    coneHEntry = tab.add("Cone Height", 100.).getEntry();
+    boxXEntry = configNumberSliderWidth(tab.add("Box X", 100.)).getEntry();
+    boxYEntry = configNumberSliderHeight(tab.add("Box Y", 100.)).getEntry();
+    boxWEntry = configNumberSliderWidth(tab.add("Box Width", 100.)).getEntry();
+    boxHEntry = configNumberSliderHeight(tab.add("Box Height", 100.)).getEntry();
+    coneXEntry = configNumberSliderWidth(tab.add("Cone X", 100.)).getEntry();
+    coneYEntry = configNumberSliderHeight(tab.add("Cone Y", 100.)).getEntry();
+    coneWEntry = configNumberSliderWidth(tab.add("Cone Width", 100.)).getEntry();
+    coneHEntry = configNumberSliderHeight(tab.add("Cone Height", 100.)).getEntry();
 
     inputStream = CameraServer.getVideo();
     outputStream = CameraServer.putVideo("Gripper", WIDTH, HEIGHT);
