@@ -4,7 +4,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '7.1.2' apply false
 }
 
-mainClassName = 'Main'
+mainClassName = 'frc.pi.Main'
 
 apply plugin: 'com.github.johnrengelman.shadow'
 
