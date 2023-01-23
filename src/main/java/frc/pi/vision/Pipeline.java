@@ -97,6 +97,7 @@ public class Pipeline implements VisionPipeline {
     }
 
     rawOutputStream.putFrame(img);
+    System.out.println(img.width() + " " + img.height());
 
     // Box guide
     Rect boxRect = getBoxRect();
