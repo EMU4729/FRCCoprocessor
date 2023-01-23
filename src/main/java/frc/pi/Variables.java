@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import edu.wpi.first.cscore.VideoSource;
-import frc.pi.utils.CameraConfig;
-import frc.pi.utils.SwitchedCameraConfig;
+import frc.pi.structures.CameraConfig;
+import frc.pi.structures.SwitchedCameraConfig;
 
 public class Variables {
   private static Optional<Variables> instance = Optional.empty();
@@ -28,4 +28,5 @@ public class Variables {
   public List<CameraConfig> cameraConfigs = new ArrayList<>();
   public List<SwitchedCameraConfig> switchedCameraConfigs = new ArrayList<>();
   public List<VideoSource> cameras = new ArrayList<>();
+
 }

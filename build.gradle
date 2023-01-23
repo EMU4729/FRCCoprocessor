@@ -1,10 +1,10 @@
 plugins {
     id 'java'
     id 'application'
-    id 'com.github.johnrengelman.shadow' version '4.0.3' apply false
+    id 'com.github.johnrengelman.shadow' version '7.1.2' apply false
 }
 
-mainClassName = 'frc.pi.Main'
+mainClassName = 'Main'
 
 apply plugin: 'com.github.johnrengelman.shadow'
 
@@ -16,18 +16,16 @@ repositories {
 }
 
 dependencies {
-    compile 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.google.code.gson:gson:2.8.5'
 
-    compile name: 'wpiutil'
-    compile name: 'ntcore'
-    compile name: 'cscore'
-    compile name: 'cameraserver'
-    compile name: 'opencv-452'
-    compile name: 'wpilibj'
-    compile name: 'wpiHal'
-}
-
-
-wrapper {
-    gradleVersion = '5.0'
+    implementation files('apriltag.jar')
+    implementation files('wpimath.jar')
+    implementation files('wpinet.jar')
+    implementation files('wpiutil.jar')
+    implementation files('ntcore.jar')
+    implementation files('cscore.jar')
+    implementation files('cameraserver.jar')
+    implementation files('opencv-460.jar')
+    implementation files('wpilibj.jar')
+    implementation files('wpiHal.jar')
 }

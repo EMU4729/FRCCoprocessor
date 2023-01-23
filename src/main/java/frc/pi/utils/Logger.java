@@ -11,7 +11,7 @@ public class Logger {
   private Logger() {
   }
 
-  public static Logger getIntstance() {
+  public static Logger getInstance() {
     if (instance.isEmpty()) {
       instance = Optional.of(new Logger());
     }

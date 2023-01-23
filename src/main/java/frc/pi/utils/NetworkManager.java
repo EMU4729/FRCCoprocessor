@@ -2,7 +2,7 @@ package frc.pi.utils;
 
 import java.util.Optional;
 
-import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.pi.Variables;
 
@@ -29,24 +29,25 @@ public class NetworkManager {
       ntinst.startServer();
     } else {
       System.out.println("Setting up NetworkTables client for team " + vars.team);
-      ntinst.startClientTeam(vars.team);
+      ntinst.startClient4("coprocessor");
+      ntinst.setServerTeam(vars.team);
       ntinst.startDSClient();
     }
   }
 
-  private double getDouble(NetworkTableEntry e) {
-    return e.getValue().getDouble();
+  private double getDouble(GenericEntry e) {
+    return e.get().getDouble();
   }
 
-  private boolean getBoolean(NetworkTableEntry e) {
-    return e.getValue().getBoolean();
+  private boolean getBoolean(GenericEntry e) {
+    return e.get().getBoolean();
   }
 
-  private String getString(NetworkTableEntry e) {
-    return e.getValue().getString();
+  private String getString(GenericEntry e) {
+    return e.get().getString();
   }
 
-  private double[] getArray(NetworkTableEntry e) {
-    return e.getValue().getDoubleArray();
+  private double[] getArray(GenericEntry e) {
+    return e.get().getDoubleArray();
   }
 }

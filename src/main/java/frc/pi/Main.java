@@ -50,11 +50,11 @@ import frc.pi.vision.VisionManager;
 public final class Main {
   private static VisionManager visManage = new VisionManager();
   private static NetworkManager _netManage = NetworkManager.getInstance();
-
   private static Variables vars = Variables.getInstance();
 
   private Main() {
-  } // doesn't seem to do anything but leave it in
+    // doesn't seem to do anything but leave it in
+  }
 
   /**
    * Main.
@@ -69,7 +69,7 @@ public final class Main {
     // loop forever
     for (;;) {
       try {
-        Thread.sleep(100);
+        Thread.sleep(10000);
       } catch (InterruptedException ex) {
         return;
       }

@@ -1,5 +1,7 @@
 package frc.pi.startup;
 
+import java.util.EnumSet;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -7,11 +9,11 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.MjpegServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoSource;
-import edu.wpi.first.networktables.EntryListenerFlags;
+import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import frc.pi.utils.CameraConfig;
-import frc.pi.utils.SwitchedCameraConfig;
 import frc.pi.Variables;
+import frc.pi.structures.CameraConfig;
+import frc.pi.structures.SwitchedCameraConfig;
 
 public class StartCamera {
   private Variables vars = Variables.getInstance();
@@ -43,27 +45,34 @@ public class StartCamera {
     System.out.println("Starting switched camera '" + config.name + "' on " + config.key);
     MjpegServer server = CameraServer.addSwitchedCamera(config.name);
 
-    NetworkTableInstance.getDefault()
-        .getEntry(config.key)
-        .addListener(event -> {
-          if (event.value.isDouble()) {
-            int i = (int) event.value.getDouble();
-            if (i >= 0 && i < vars.cameras.size()) {
-              server.setSource(vars.cameras.get(i));
-            }
-          } else if (event.value.isString()) {
-            String str = event.value.getString();
-            for (int i = 0; i < vars.cameraConfigs.size(); i++) {
-              if (str.equals(vars.cameraConfigs.get(i).name)) {
+    NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    inst.addListener(
+        inst.getTopic(config.key),
+        EnumSet.of(NetworkTableEvent.Kind.kImmediate, NetworkTableEvent.Kind.kValueAll),
+        event -> {
+          if (event.valueData != null) {
+            if (event.valueData.value.isInteger()) {
+              int i = (int) event.valueData.value.getInteger();
+              if (i >= 0 && i < vars.cameras.size()) {
                 server.setSource(vars.cameras.get(i));
-                break;
+              }
+            } else if (event.valueData.value.isDouble()) {
+              int i = (int) event.valueData.value.getDouble();
+              if (i >= 0 && i < vars.cameras.size()) {
+                server.setSource(vars.cameras.get(i));
+              }
+            } else if (event.valueData.value.isString()) {
+              String str = event.valueData.value.getString();
+              for (int i = 0; i < vars.cameraConfigs.size(); i++) {
+                if (str.equals(vars.cameraConfigs.get(i).name)) {
+                  server.setSource(vars.cameras.get(i));
+                  break;
+                }
               }
             }
           }
-        },
-            EntryListenerFlags.kImmediate | EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
+        });
 
     return server;
   }
-
 }

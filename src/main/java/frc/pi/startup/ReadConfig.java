@@ -9,14 +9,71 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import frc.pi.utils.CameraConfig;
-import frc.pi.utils.Logger;
-import frc.pi.utils.SwitchedCameraConfig;
 import frc.pi.Variables;
+import frc.pi.structures.CameraConfig;
+import frc.pi.structures.SwitchedCameraConfig;
+import frc.pi.utils.Logger;
 
 public final class ReadConfig {
-  private Logger logger = Logger.getIntstance();
-  private Variables values = Variables.getInstance();
+  private final Logger logger = Logger.getInstance();
+  private final Variables vars = Variables.getInstance();
+
+  /**
+   * Read single camera configuration.
+   */
+  public boolean readCameraConfig(JsonObject config) {
+    CameraConfig cam = new CameraConfig();
+
+    // name
+    JsonElement nameElement = config.get("name");
+    if (nameElement == null) {
+      logger.parseError("could not read camera name");
+      return false;
+    }
+    cam.name = nameElement.getAsString();
+
+    // path
+    JsonElement pathElement = config.get("path");
+    if (pathElement == null) {
+      logger.parseError("camera '" + cam.name + "': could not read path");
+      return false;
+    }
+    cam.path = pathElement.getAsString();
+
+    // stream properties
+    cam.streamConfig = config.get("stream");
+
+    cam.config = config;
+
+    vars.cameraConfigs.add(cam);
+    return true;
+  }
+
+  /**
+   * Read single switched camera configuration.
+   */
+  public boolean readSwitchedCameraConfig(JsonObject config) {
+    SwitchedCameraConfig cam = new SwitchedCameraConfig();
+
+    // name
+    JsonElement nameElement = config.get("name");
+    if (nameElement == null) {
+      logger.parseError("could not read switched camera name");
+      return false;
+    }
+    cam.name = nameElement.getAsString();
+
+    // path
+    JsonElement keyElement = config.get("key");
+    if (keyElement == null) {
+      logger.parseError("switched camera '" + cam.name + "': could not read key");
+      return false;
+    }
+    cam.key = keyElement.getAsString();
+
+    vars.switchedCameraConfigs.add(cam);
+    return true;
+  }
 
   /**
    * Read configuration file.
@@ -26,9 +83,9 @@ public final class ReadConfig {
     // parse file
     JsonElement top;
     try {
-      top = new JsonParser().parse(Files.newBufferedReader(Paths.get(values.configFile)));
+      top = new JsonParser().parse(Files.newBufferedReader(Paths.get(vars.configFile)));
     } catch (IOException ex) {
-      System.err.println("could not open '" + values.configFile + "': " + ex);
+      System.err.println("could not open '" + vars.configFile + "': " + ex);
       return false;
     }
 
@@ -45,15 +102,15 @@ public final class ReadConfig {
       logger.parseError("could not read team number");
       return false;
     }
-    values.team = teamElement.getAsInt();
+    vars.team = teamElement.getAsInt();
 
     // ntmode (optional)
     if (obj.has("ntmode")) {
       String str = obj.get("ntmode").getAsString();
       if ("client".equalsIgnoreCase(str)) {
-        values.server = false;
+        vars.server = false;
       } else if ("server".equalsIgnoreCase(str)) {
-        values.server = true;
+        vars.server = true;
       } else {
         logger.parseError("could not understand ntmode value '" + str + "'");
       }
@@ -81,60 +138,6 @@ public final class ReadConfig {
       }
     }
 
-    return true;
-  }
-
-  public boolean readCameraConfig(JsonObject config) {
-    CameraConfig cam = new CameraConfig();
-
-    // name
-    JsonElement nameElement = config.get("name");
-    if (nameElement == null) {
-      logger.parseError("could not read camera name");
-      return false;
-    }
-    cam.name = nameElement.getAsString();
-
-    // path
-    JsonElement pathElement = config.get("path");
-    if (pathElement == null) {
-      logger.parseError("camera '" + cam.name + "': could not read path");
-      return false;
-    }
-    cam.path = pathElement.getAsString();
-
-    // stream properties
-    cam.streamConfig = config.get("stream");
-
-    cam.config = config;
-
-    values.cameraConfigs.add(cam);
-    return true;
-  }
-
-  /**
-   * Read single switched camera configuration.
-   */
-  public boolean readSwitchedCameraConfig(JsonObject config) {
-    SwitchedCameraConfig cam = new SwitchedCameraConfig();
-
-    // name
-    JsonElement nameElement = config.get("name");
-    if (nameElement == null) {
-      logger.parseError("could not read switched camera name");
-      return false;
-    }
-    cam.name = nameElement.getAsString();
-
-    // path
-    JsonElement keyElement = config.get("key");
-    if (keyElement == null) {
-      logger.parseError("switched camera '" + cam.name + "': could not read key");
-      return false;
-    }
-    cam.key = keyElement.getAsString();
-
-    values.switchedCameraConfigs.add(cam);
     return true;
   }
 }

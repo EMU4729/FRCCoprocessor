@@ -1,4 +1,4 @@
-package frc.pi.utils;
+package frc.pi.structures;
 
 public class SwitchedCameraConfig {
   public String name;

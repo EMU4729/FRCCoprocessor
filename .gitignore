@@ -1,5 +1,0 @@
-*.class
-.gradle
-**/build/
-!src/**/build/
-.classpath
