@@ -79,14 +79,14 @@ public class Pipeline implements VisionPipeline {
     }
 
     ShuffleboardTab tab = Shuffleboard.getTab("Gripper Cam");
-    boxXEntry = configNumberSliderWidth(tab.add("Box X", 100.)).getEntry();
-    boxYEntry = configNumberSliderHeight(tab.add("Box Y", 100.)).getEntry();
-    boxWEntry = configNumberSliderWidth(tab.add("Box Width", 100.)).getEntry();
-    boxHEntry = configNumberSliderHeight(tab.add("Box Height", 100.)).getEntry();
-    coneXEntry = configNumberSliderWidth(tab.add("Cone X", 100.)).getEntry();
-    coneYEntry = configNumberSliderHeight(tab.add("Cone Y", 100.)).getEntry();
-    coneWEntry = configNumberSliderWidth(tab.add("Cone Width", 100.)).getEntry();
-    coneHEntry = configNumberSliderHeight(tab.add("Cone Height", 100.)).getEntry();
+    boxXEntry = configNumberSliderWidth(tab.add("Box X", 0.)).getEntry();
+    boxYEntry = configNumberSliderHeight(tab.add("Box Y", 0.)).getEntry();
+    boxWEntry = configNumberSliderWidth(tab.add("Box Width", 50.)).getEntry();
+    boxHEntry = configNumberSliderHeight(tab.add("Box Height", 50.)).getEntry();
+    coneXEntry = configNumberSliderWidth(tab.add("Cone X", 0.)).getEntry();
+    coneYEntry = configNumberSliderHeight(tab.add("Cone Y", 0.)).getEntry();
+    coneWEntry = configNumberSliderWidth(tab.add("Cone Width", 50.)).getEntry();
+    coneHEntry = configNumberSliderHeight(tab.add("Cone Height", 50.)).getEntry();
 
   }
 
