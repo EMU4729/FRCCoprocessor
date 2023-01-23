@@ -60,15 +60,24 @@ public class Pipeline implements VisionPipeline {
 
   private SimpleWidget configNumberSliderWidth(SimpleWidget widget) {
     return widget.withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("min", 0, "max", WIDTH));
+        .withProperties(Map.of("min", 0, "max", img.width()));
   }
 
   private SimpleWidget configNumberSliderHeight(SimpleWidget widget) {
     return widget.withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("min", 0, "max", HEIGHT));
+        .withProperties(Map.of("min", 0, "max", img.height()));
   }
 
   public Pipeline() {
+    inputStream = CameraServer.getVideo();
+    outputStream = CameraServer.putVideo("Gripper", WIDTH, HEIGHT);
+    rawOutputStream = CameraServer.putVideo("Raw", WIDTH, HEIGHT);
+    img = new Mat();
+
+    if (inputStream.grabFrame(img) == 0) {
+      outputStream.notifyError(inputStream.getError());
+    }
+
     ShuffleboardTab tab = Shuffleboard.getTab("Gripper Cam");
     boxXEntry = configNumberSliderWidth(tab.add("Box X", 100.)).getEntry();
     boxYEntry = configNumberSliderHeight(tab.add("Box Y", 100.)).getEntry();
@@ -79,10 +88,6 @@ public class Pipeline implements VisionPipeline {
     coneWEntry = configNumberSliderWidth(tab.add("Cone Width", 100.)).getEntry();
     coneHEntry = configNumberSliderHeight(tab.add("Cone Height", 100.)).getEntry();
 
-    inputStream = CameraServer.getVideo();
-    outputStream = CameraServer.putVideo("Gripper", WIDTH, HEIGHT);
-    rawOutputStream = CameraServer.putVideo("Raw", WIDTH, HEIGHT);
-    img = new Mat();
   }
 
   @Override
